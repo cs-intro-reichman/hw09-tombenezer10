@@ -72,7 +72,7 @@ public class List {
     /** GIVE Textual representation of this list. */
     public String toString() {
         // Your code goes here
-        ListIterator itr = listIterator(indexOf(getFirst().chr));
+        ListIterator itr = listIterator(0);
         String res = "";
         while (itr.hasNext()) {
             res += itr.next().toString();
