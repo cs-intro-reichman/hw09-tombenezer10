@@ -6,25 +6,29 @@ public class LanguageModel {
     // The map of this model.
     // Maps windows to lists of charachter data objects.
     HashMap<String, List> CharDataMap;
-    
+
     // The window length used in this model.
     int windowLength;
-    
-    // The random number generator used by this model. 
-	private Random randomGenerator;
 
-    /** Constructs a language model with the given window length and a given
-     *  seed value. Generating texts from this model multiple times with the 
-     *  same seed value will produce the same random texts. Good for debugging. */
+    // The random number generator used by this model.
+    private Random randomGenerator;
+
+    /**
+     * Constructs a language model with the given window length and a given
+     * seed value. Generating texts from this model multiple times with the
+     * same seed value will produce the same random texts. Good for debugging.
+     */
     public LanguageModel(int windowLength, int seed) {
         this.windowLength = windowLength;
         randomGenerator = new Random(seed);
         CharDataMap = new HashMap<String, List>();
     }
 
-    /** Constructs a language model with the given window length.
+    /**
+     * Constructs a language model with the given window length.
      * Generating texts from this model multiple times will produce
-     * different random texts. Good for production. */
+     * different random texts. Good for production.
+     */
     public LanguageModel(int windowLength) {
         this.windowLength = windowLength;
         randomGenerator = new Random();
@@ -32,43 +36,144 @@ public class LanguageModel {
     }
 
     /** Builds a language model from the text in the given file (the corpus). */
-	public void train(String fileName) {
-		// Your code goes here
-	}
+    public void train(String fileName) {
+        // Your code goes here
+        String window = "";
+        char c;
+        In in = new In(fileName);
+        // Reads just enough characters to form the first window
+        // code: Performs the action described above.
+        for (int i = 0; i < windowLength; i++) {
+            window += in.readChar();
+        }
+        // Processes the entire text, one character at a time
+        List probs = new List();
+
+        while (!in.isEmpty()) {
+            // Gets the next character
+            c = in.readChar();
+            // Checks if the window is already in the map
+            // code: tries to get the list of this window from the map.
+            // Let’s call the retrieved list “probs” (it may be null)
+            // If the window was not found in the map
+            // code: the if statement described above {
+            // Creates a new empty list, and adds (window,list) to the map
+            // code: Performs the action described above.
+            // Let’s call the newly created list “probs”
+            if (CharDataMap.get(window) != null) {
+                probs = CharDataMap.get(window);
+            } else {
+                CharDataMap.put(window, probs);
+            }
+            // Calculates the counts of the current character.
+            probs.update(c);
+            // Advances the window: adds c to the window’s end, and deletes the
+            // window's first character.
+            // code: Performs the action described above.
+            window = window.substring(1) + c;
+        }
+        // The entire file has been processed, and all the characters have been counted.
+        // Proceeds to compute and set the p and cp fields of all the CharData objects
+        // in each linked list in the map.
+        ListIterator itr = probs.listIterator(0);
+        while (itr.hasNext()) {
+            calculateProbabilities(probs);
+            itr.next();
+        }
+    }
 
     // Computes and sets the probabilities (p and cp fields) of all the
-	// characters in the given list. */
-	public void calculateProbabilities(List probs) {				
-		// Your code goes here
-	}
+    // characters in the given list. */
+    public void calculateProbabilities(List probs) {
+        // Your code goes here
+        ListIterator itr = probs.listIterator(0);
+        int totalChr = 0;
+        int i = 1;
+        while (itr.hasNext()) {
+            CharData current = itr.next();
+            totalChr += current.count;
+        }
+        while(itr.hasNext()){
+            CharData prev = probs.get(i - 1);
+            CharData current = probs.get(i);
+            current.p = i / totalChr;
+            current.cp = prev.cp + current.p;
+            i++;
+        }
+    }
 
     // Returns a random character from the given probabilities list.
-	public char getRandomChar(List probs) {
-		// Your code goes here
-	}
+    public char getRandomChar(List probs) {
+        // Your code goes here
+        double random = randomGenerator.nextDouble();
+        ListIterator itr = probs.listIterator(0);
+        while (itr.hasNext()) {
+            if (random < itr.next().cp) {
+                return itr.next().chr;
+            }
+        }
+        return ' ';
+    }
 
     /**
-	 * Generates a random text, based on the probabilities that were learned during training. 
-	 * @param initialText - text to start with. If initialText's last substring of size numberOfLetters
-	 * doesn't appear as a key in Map, we generate no text and return only the initial text. 
-	 * @param numberOfLetters - the size of text to generate
-	 * @return the generated text
-	 */
-	public String generate(String initialText, int textLength) {
-		// Your code goes here
-	}
+     * Generates a random text, based on the probabilities that were learned during
+     * training.
+     * 
+     * @param initialText     - text to start with. If initialText's last substring
+     *                        of size numberOfLetters
+     *                        doesn't appear as a key in Map, we generate no text
+     *                        and return only the initial text.
+     * @param numberOfLetters - the size of text to generate
+     * @return the generated text
+     */
+    public String generate(String initialText, int textLength) {
+        // Your code goes here
+        if (initialText.length() < windowLength) {
+            return initialText;
+        }
+
+        String window = initialText.substring(initialText.length() - windowLength);
+        String res = initialText;
+        List probs = new List();
+
+        while (res.length() != textLength) {
+            probs = CharDataMap.get(window);
+            if (probs == null) {
+                return res;
+            } else {
+                res += getRandomChar(probs);
+                window = res.substring(res.length() - windowLength);
+            }
+        }
+        return res;
+    }
 
     /** Returns a string representing the map of this language model. */
-	public String toString() {
-		StringBuilder str = new StringBuilder();
-		for (String key : CharDataMap.keySet()) {
-			List keyProbs = CharDataMap.get(key);
-			str.append(key + " : " + keyProbs + "\n");
-		}
-		return str.toString();
-	}
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        for (String key : CharDataMap.keySet()) {
+            List keyProbs = CharDataMap.get(key);
+            str.append(key + " : " + keyProbs + "\n");
+        }
+        return str.toString();
+    }
 
     public static void main(String[] args) {
-		// Your code goes here
+        // Your code goes here
+        int windowLength = Integer.parseInt(args[0]);
+        String initialText = args[1];
+        int generatedTextLength = Integer.parseInt(args[2]);
+        Boolean randomGeneration = args[3].equals("random");
+        String fileName = args[4];
+        // Create the LanguageModel object
+        LanguageModel lm;
+        if (randomGeneration)
+            lm = new LanguageModel(windowLength);
+        else
+            lm = new LanguageModel(windowLength, 20);
+        // Trains the model, creating the map.
+        lm.train(fileName);
+        // Generates text, and prints it.
+        System.out.println(lm.generate(initialText, generatedTextLength));
     }
 }
