@@ -50,7 +50,7 @@ public class List {
         String res = "";
         Node current = first;
         while (current != null) {
-            res += current.toString();
+            res += current.toString() + " ";
             current = current.next;
         }
         return res;
