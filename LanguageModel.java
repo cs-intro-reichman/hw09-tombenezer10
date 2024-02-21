@@ -41,40 +41,29 @@ public class LanguageModel {
         String window = "";
         char c;
         In in = new In(fileName);
-        // Reads just enough characters to form the first window
-        // code: Performs the action described above.
-        for (int i = 0; i < windowLength; i++) {
-            window += in.readChar();
-        }
-        // Processes the entire text, one character at a time
-        while (!in.isEmpty()) {
-            // Gets the next character
+
+        c = in.readChar();
+        while(c == ' ') {
             c = in.readChar();
-            // Checks if the window is already in the map
-            // code: tries to get the list of this window from the map.
-            // Let’s call the retrieved list “probs” (it may be null)
-            // If the window was not found in the map
-            // code: the if statement described above {
-            // Creates a new empty list, and adds (window,list) to the map
-            // code: Performs the action described above.
-            // Let’s call the newly created list “probs”
+        }
+        for(int i = 0; i < windowLength; i++) {
+            c = in.readChar();
+            window += c;
+        }
+
+        while (!in.isEmpty()) {
+            c = in.readChar();
             List probs = CharDataMap.get(window);
             if (probs == null) {
                 probs = new List();
                 CharDataMap.put(window, probs);
             }
             probs.update(c);
-            // Calculates the counts of the current character.
-            // Advances the window: adds c to the window’s end, and deletes the
-            // window's first character.
-            // code: Performs the action described above.
             window = window.substring(1) + c;
         }
-        // The entire file has been processed, and all the characters have been counted.
-        // Proceeds to compute and set the p and cp fields of all the CharData objects
-        // in each linked list in the map.
+
         for (List probs : CharDataMap.values()) {
-                calculateProbabilities(probs);
+            calculateProbabilities(probs);
         }
     }
 
