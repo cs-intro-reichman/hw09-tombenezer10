@@ -123,7 +123,7 @@ public class LanguageModel {
         String res = initialText;
         List probs = new List();
 
-        while (res.length() != textLength) {
+        while (res.length() - initialText.length() != textLength) {
             probs = CharDataMap.get(window);
             if (probs == null) {
                 return res;
@@ -154,21 +154,14 @@ public class LanguageModel {
         String fileName = args[4];
         // Create the LanguageModel object
         LanguageModel lm;
-        if (randomGeneration)
+        if(randomGeneration) {
             lm = new LanguageModel(windowLength);
-        else
+        } else {
             lm = new LanguageModel(windowLength, 20);
+        }
         // Trains the model, creating the map.
         lm.train(fileName);
         // Generates text, and prints it.
         System.out.println(lm.generate(initialText, generatedTextLength));
-
-        // test train method
-        // int windowLength = 2;
-        // String fileName = "testTrain.txt";
-        // LanguageModel lm;
-        // lm = new LanguageModel(windowLength);
-        // lm.train(fileName);
-        // System.out.println(lm.toString());
     }
 }
