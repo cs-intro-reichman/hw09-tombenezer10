@@ -10,31 +10,6 @@
  */
 public class List {
 
-    // public static void main(String[] args) {
-    //     // tests for this class
-    //     List testList = new List();
-    //     String word = "committee ";
-
-    //     for (int i = 0; i < word.length(); i++) {
-    //         if (testList.first == null) {
-    //             testList.addFirst(word.charAt(i));
-    //         } else {
-    //             testList.update(word.charAt(i));
-    //         }
-    //     }
-
-    //     System.out.println(testList.getSize());
-    //     System.out.println(testList.getFirst().toString());
-    //     System.out.println(testList.toString());
-    //     System.err.println(testList.indexOf('o'));
-    //     System.err.println(testList.indexOf('m'));
-
-    //     System.out.println(testList.remove('e'));
-    //     System.err.println(testList.toString());
-    //     System.out.println(testList.get(0).toString());
-
-    // }
-
     // Points to the first node in this list
     private Node first;
 
@@ -72,10 +47,11 @@ public class List {
     /** GIVE Textual representation of this list. */
     public String toString() {
         // Your code goes here
-        ListIterator itr = listIterator(0);
         String res = "";
-        while (itr.hasNext()) {
-            res += itr.next().toString();
+        Node current = first;
+        while (current != null) {
+            res += current.toString();
+            current = current.next;
         }
         return res;
     }
