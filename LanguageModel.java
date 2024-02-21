@@ -47,9 +47,10 @@ public class LanguageModel {
             c = in.readChar();
         }
         for(int i = 0; i < windowLength; i++) {
-            c = in.readChar();
             window += c;
+            c = in.readChar();
         }
+        System.out.println("the first window: " + window);
 
         while (!in.isEmpty()) {
             c = in.readChar();
