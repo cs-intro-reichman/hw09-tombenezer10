@@ -42,13 +42,9 @@ public class LanguageModel {
         char c;
         In in = new In(fileName);
 
-        c = in.readChar();
-        while(c == ' ') {
-            c = in.readChar();
-        }
         for(int i = 0; i < windowLength; i++) {
-            window += c;
             c = in.readChar();
+            window += c;
         }
 
         while (!in.isEmpty()) {
