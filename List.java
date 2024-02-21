@@ -85,19 +85,17 @@ public class List {
      */
     public void update(char chr) {
         // Your code goes here
-        if(first == null) {
-            addFirst(chr);
-        }
-        // ListIterator itr = listIterator(0);
         Node current = first;
         while (current != null) {
             if (current.cp.chr == chr) {
                 current.cp.count++;
-                return;
+                break;
             }
             current = current.next;
         }
-        addFirst(chr);
+        if(current == null) {
+            addFirst(chr);
+        }
     }
 
     /**
@@ -133,7 +131,7 @@ public class List {
      */
     public CharData get(int index) {
         // Your code goes here
-        if (index > size || index < 0) {
+        if (index >= size || index < 0) {
             throw new IndexOutOfBoundsException("illegal index " + index);
         }
         CharData[] list = toArray();
