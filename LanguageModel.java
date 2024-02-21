@@ -47,8 +47,6 @@ public class LanguageModel {
             window += in.readChar();
         }
         // Processes the entire text, one character at a time
-        List probs = new List();
-
         while (!in.isEmpty()) {
             // Gets the next character
             c = in.readChar();
@@ -60,13 +58,13 @@ public class LanguageModel {
             // Creates a new empty list, and adds (window,list) to the map
             // code: Performs the action described above.
             // Let’s call the newly created list “probs”
-            if (CharDataMap.get(window) != null) {
-                probs = CharDataMap.get(window);
-            } else {
+            List probs = CharDataMap.get(window);
+            if (probs == null) {
+                probs = new List();
                 CharDataMap.put(window, probs);
             }
-            // Calculates the counts of the current character.
             probs.update(c);
+            // Calculates the counts of the current character.
             // Advances the window: adds c to the window’s end, and deletes the
             // window's first character.
             // code: Performs the action described above.
@@ -75,10 +73,8 @@ public class LanguageModel {
         // The entire file has been processed, and all the characters have been counted.
         // Proceeds to compute and set the p and cp fields of all the CharData objects
         // in each linked list in the map.
-        ListIterator itr = probs.listIterator(0);
-        while (itr.hasNext()) {
-            calculateProbabilities(probs);
-            itr.next();
+        for (List probs : CharDataMap.values()) {
+                calculateProbabilities(probs);
         }
     }
 
@@ -103,6 +99,7 @@ public class LanguageModel {
             prev.p = prev.count / (double) totalChr;
             current.p = current.count / (double) totalChr;
             current.cp = prev.cp + current.p;
+
         }
     }
 
