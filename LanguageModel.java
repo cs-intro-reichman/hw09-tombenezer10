@@ -42,9 +42,9 @@ public class LanguageModel {
         char c;
         In in = new In(fileName);
 
-        for(int i = 0; i < windowLength; i++) {
-            c = in.readChar();
-            window += c;
+        for (int i = 0; i < windowLength; i++) {
+            window += in.readChar();
+            ;
         }
 
         while (!in.isEmpty()) {
@@ -73,18 +73,18 @@ public class LanguageModel {
             CharData current = itr.next();
             totalChr += current.count;
         }
-        for (int i = 1; i < probs.getSize(); i++) {
-            if (i - 1 == 0) {
-                CharData prev = probs.get(i - 1);
-                prev.p = prev.count / (double) totalChr;
-                prev.cp = prev.p;
-            }
-            CharData prev = probs.get(i - 1);
-            CharData current = probs.get(i);
-            prev.p = prev.count / (double) totalChr;
-            current.p = current.count / (double) totalChr;
-            current.cp = prev.cp + current.p;
 
+        CharData current = probs.getFirst();
+        current.p = (double) current.count / (double) totalChr;
+        current.cp = current.p;
+
+        ListIterator itr2 = probs.listIterator(1);
+        while (itr2.hasNext()) {
+            CharData prev = probs.get(probs.indexOf(current.chr));
+            current = itr2.next();
+            prev.p = (double) prev.count / (double) totalChr;
+            current.p = (double) current.count / (double) totalChr;
+            current.cp = prev.cp + current.p;
         }
     }
 
@@ -162,5 +162,13 @@ public class LanguageModel {
         lm.train(fileName);
         // Generates text, and prints it.
         System.out.println(lm.generate(initialText, generatedTextLength));
+
+        // test train method
+        // int windowLength = 2;
+        // String fileName = "testTrain.txt";
+        // LanguageModel lm;
+        // lm = new LanguageModel(windowLength);
+        // lm.train(fileName);
+        // System.out.println(lm.toString());
     }
 }
