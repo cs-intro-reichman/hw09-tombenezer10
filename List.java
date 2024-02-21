@@ -88,13 +88,14 @@ public class List {
         if(first == null) {
             addFirst(chr);
         }
-        ListIterator itr = listIterator(0);
-        while (itr.hasNext()) {
-            CharData current = itr.next();
-            if (current.chr == chr) {
-                current.count++;
+        // ListIterator itr = listIterator(0);
+        Node current = first;
+        while (current != null) {
+            if (current.cp.chr == chr) {
+                current.cp.count++;
                 return;
             }
+            current = current.next;
         }
         addFirst(chr);
     }
@@ -135,11 +136,8 @@ public class List {
         if (index >= size || index < 0) {
             throw new IndexOutOfBoundsException("illegal index " + index);
         }
-        Node current = first;
-        for (int i = 0; i < index; i++) {
-            current = current.next;
-        }
-        return current.cp;
+        CharData[] list = toArray();
+        return list[index];
     }
 
     /**
