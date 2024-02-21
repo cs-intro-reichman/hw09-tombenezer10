@@ -88,17 +88,21 @@ public class LanguageModel {
         // Your code goes here
         ListIterator itr = probs.listIterator(0);
         int totalChr = 0;
-        int i = 1;
         while (itr.hasNext()) {
             CharData current = itr.next();
             totalChr += current.count;
         }
-        while(itr.hasNext()){
-            CharData prev = probs.get(i - 1);
-            CharData current = probs.get(i);
-            current.p = i / totalChr;
-            current.cp = prev.cp + current.p;
-            i++;
+        for(int i = 0; i < probs.getSize(); i++){
+            if(i == 0) {
+                CharData current = probs.get(i);
+                current.p = i / (double) totalChr;
+                current.cp = current.p;
+            } else {
+                CharData prev = probs.get(i - 1);
+                CharData current = probs.get(i);
+                current.p = i / (double) totalChr;
+                current.cp = prev.cp + current.p;
+            }     
         }
     }
 
@@ -108,8 +112,9 @@ public class LanguageModel {
         double random = randomGenerator.nextDouble();
         ListIterator itr = probs.listIterator(0);
         while (itr.hasNext()) {
-            if (random < itr.next().cp) {
-                return itr.next().chr;
+            CharData current = itr.next();
+            if (random < current.cp) {
+                return current.chr;
             }
         }
         return ' ';

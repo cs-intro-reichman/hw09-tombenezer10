@@ -47,7 +47,7 @@ public class List {
     /** GIVE Textual representation of this list. */
     public String toString() {
         // Your code goes here
-        if(size == 0) {
+        if (size == 0) {
             return "()";
         }
         String res = "(";
@@ -93,7 +93,7 @@ public class List {
             }
             current = current.next;
         }
-        if(current == null) {
+        if (current == null) {
             addFirst(chr);
         }
     }
