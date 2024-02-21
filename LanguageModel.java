@@ -92,17 +92,11 @@ public class LanguageModel {
             CharData current = itr.next();
             totalChr += current.count;
         }
-        for(int i = 0; i < probs.getSize(); i++){
-            if(i == 0) {
-                CharData current = probs.get(i);
-                current.p = i / (double) totalChr;
-                current.cp = current.p;
-            } else {
+        for(int i = 1; i < probs.getSize(); i++){
                 CharData prev = probs.get(i - 1);
                 CharData current = probs.get(i);
                 current.p = i / (double) totalChr;
                 current.cp = prev.cp + current.p;
-            }     
         }
     }
 
